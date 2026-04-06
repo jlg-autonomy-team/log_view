@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/log_viewer.dir/link.d CMakeFiles/log_viewer.dir/src/main.cpp.o -o log_viewer  liblog_view.a -lncurses /usr/lib/x86_64-linux-gnu/libform.so /usr/lib/x86_64-linux-gnu/libpanel.so -lsystemd

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(log_view)
 
-find_package(ament_cmake REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SYSTEMD REQUIRED libsystemd)
 
@@ -52,25 +51,5 @@ target_link_libraries(log_viewer ${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME} log_viewer
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION bin
 )
-
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-
-install(FILES
-  CONTRIBUTING.md
-  DESTINATION share/${PROJECT_NAME}
-)
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_cpplint ament_cmake_uncrustify)
-  ament_lint_auto_find_test_dependencies()
-  find_package(ament_cmake_cpplint REQUIRED)
-  ament_cpplint(
-    FILTERS "-build/include_order"
-    MAX_LINE_LENGTH 100)
-endif()
-
-ament_package()
