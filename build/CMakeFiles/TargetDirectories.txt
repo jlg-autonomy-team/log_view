@@ -1,8 +1,0 @@
-/home/runner/work/log_view/log_view/build/CMakeFiles/log_view.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/log_viewer.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/edit_cache.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/rebuild_cache.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/list_install_components.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/install.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/install/local.dir
-/home/runner/work/log_view/log_view/build/CMakeFiles/install/strip.dir

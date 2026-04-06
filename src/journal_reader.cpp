@@ -51,7 +51,7 @@ JournalReader::~JournalReader() {
 std::vector<std::string> JournalReader::discoverContainers() {
   std::vector<std::string> containers;
 
-  FILE* pipe = popen("podman ps --format '{{.Names}}' 2>/dev/null", "r");
+  FILE* pipe = popen("podman ps --format '{{.Names}}'", "r");
   if (!pipe) {
     return containers;
   }
@@ -67,7 +67,11 @@ std::vector<std::string> JournalReader::discoverContainers() {
       containers.push_back(name);
     }
   }
-  pclose(pipe);
+  int status = pclose(pipe);
+  if (status != 0) {
+    // podman command failed; return whatever was collected (likely empty)
+    containers.clear();
+  }
 
   return containers;
 }
@@ -107,12 +111,13 @@ void JournalReader::run() {
   // Add match filters for each container.
   // Podman logs to journalctl with CONTAINER_NAME=<name> field.
   if (!containers.empty()) {
-    for (const auto& container : containers) {
-      std::string match = "CONTAINER_NAME=" + container;
+    for (size_t i = 0; i < containers.size(); i++) {
+      std::string match = "CONTAINER_NAME=" + containers[i];
       sd_journal_add_match(journal, match.c_str(), 0);
-      // sd_journal_add_disjunction separates matches with OR logic,
-      // so entries from any container will be included.
-      sd_journal_add_disjunction(journal);
+      // Add disjunction (OR) between container matches, but not after the last one
+      if (i + 1 < containers.size()) {
+        sd_journal_add_disjunction(journal);
+      }
     }
   }
 
@@ -140,7 +145,11 @@ void JournalReader::run() {
         // Data format is "PRIORITY=N"
         const char* eq = static_cast<const char*>(memchr(priority_data, '=', priority_len));
         if (eq) {
-          priority = atoi(eq + 1);
+          char* end = nullptr;
+          long val = strtol(eq + 1, &end, 10);
+          if (end != eq + 1 && val >= 0 && val <= 7) {
+            priority = static_cast<int>(val);
+          }
         }
       }
 
@@ -191,8 +200,9 @@ void JournalReader::run() {
       break;
     }
 
-    // Wait for new entries (up to 500ms before checking running_ flag again)
-    r = sd_journal_wait(journal, 500000);  // 500ms in microseconds
+    // Wait for new entries before checking running_ flag again
+    static const uint64_t kWaitTimeoutUsec = 500 * 1000;  // 500ms
+    r = sd_journal_wait(journal, kWaitTimeoutUsec);
     if (r < 0) {
       break;
     }
