@@ -28,14 +28,23 @@
 
 #pragma once
 
+#include <chrono>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include <log_view/utils.h>
-#include <rclcpp/rclcpp.hpp>
-#include <rcl_interfaces/msg/log.hpp>
 
 namespace log_view {
+
+// Log level constants (matching the values from rcl_interfaces::msg::Log)
+namespace LogLevel {
+  constexpr uint8_t DEBUG = 10;
+  constexpr uint8_t INFO = 20;
+  constexpr uint8_t WARN = 30;
+  constexpr uint8_t ERROR = 40;
+  constexpr uint8_t FATAL = 50;
+}  // namespace LogLevel
 
 struct LogLine {
   size_t index;
@@ -46,22 +55,22 @@ struct LogEntry
 {
   LogEntry() = default;
   LogEntry(const LogEntry& entry) = default;
-  explicit LogEntry(const rcl_interfaces::msg::Log& log) :
-    stamp(log.stamp),
-    level(log.level),
-    node(log.name),
-    file(log.file),
-    function(log.function),
-    line(log.line),
-    text(split(log.msg, '\n'))
+
+  // Constructor for journal entries
+  LogEntry(double timestamp, uint8_t lvl, const std::string& container,
+           const std::string& message) :
+    stamp(timestamp),
+    level(lvl),
+    node(container),
+    text(split(message, '\n'))
   {}
 
-  rclcpp::Time stamp;
-  uint8_t level;
+  double stamp = 0.0;
+  uint8_t level = LogLevel::INFO;
   std::string node;
   std::string file;
   std::string function;
-  uint32_t line;
+  uint32_t line = 0;
   std::vector<std::string> text;
 };
 

@@ -33,8 +33,6 @@
 
 #include <vector>
 
-#include <rclcpp/rclcpp.hpp>
-
 #include <log_view/log_filter.h>
 #include <log_view/log_store.h>
 #include <log_view/panel_interface.h>
@@ -60,8 +58,7 @@ public:
 
   bool exited() const;
 
-  void setRosTime(const rclcpp::Time& time);
-  void setSystemTime(const rclcpp::Time& time);
+  void setSystemTime(double time);
 
   void update();
 

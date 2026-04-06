@@ -30,7 +30,7 @@
 
 #include <string>
 
-#include <rcl_interfaces/msg/log.hpp>
+#include <log_view/datatypes.h>
 #include <log_view/utils.h>
 
 namespace log_view {
@@ -69,18 +69,18 @@ void DetailsPanel::refresh() {
     const auto& entry = filter_.getEntry(selected);
 
     int row = 1;
-    row = printWrapped(row, "stamp: " + toString(entry.stamp.seconds(), 4));
+    row = printWrapped(row, "stamp: " + toString(entry.stamp, 4));
 
     std::string level_text = "level: ";
-    if (entry.level == rcl_interfaces::msg::Log::DEBUG) {
+    if (entry.level == LogLevel::DEBUG) {
       level_text += "DEBUG";
-    } else if (entry.level == rcl_interfaces::msg::Log::INFO) {
+    } else if (entry.level == LogLevel::INFO) {
       level_text += "INFO";
-    } else if (entry.level == rcl_interfaces::msg::Log::WARN) {
+    } else if (entry.level == LogLevel::WARN) {
       level_text += "WARN";
-    } else if (entry.level == rcl_interfaces::msg::Log::ERROR) {
+    } else if (entry.level == LogLevel::ERROR) {
       level_text += "ERROR";
-    } else if (entry.level == rcl_interfaces::msg::Log::FATAL) {
+    } else if (entry.level == LogLevel::FATAL) {
       level_text += "FATAL";
     } else {
       level_text += std::to_string(entry.level);

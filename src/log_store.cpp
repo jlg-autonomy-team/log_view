@@ -43,10 +43,10 @@ size_t LogStore::size() const {
   return logs_.size();
 }
 
-void LogStore::addEntry(const rcl_interfaces::msg::Log::SharedPtr msg) {
+void LogStore::addEntry(LogEntry entry) {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  new_logs_.push_back(LogEntry(*msg));
+  new_logs_.push_back(std::move(entry));
 }
 
 }  // namespace log_view

@@ -193,16 +193,16 @@ int LogPanel::getContentWidth() const {
 }
 
 std::string LogPanel::getPrefix(const LogEntry& entry, size_t line) const {
-  std::string text = toString(entry.stamp.seconds(), 4) + " [";
-  if (entry.level == rcl_interfaces::msg::Log::DEBUG) {
+  std::string text = toString(entry.stamp, 4) + " [";
+  if (entry.level == LogLevel::DEBUG) {
     text += "DEBUG";
-  } else if (entry.level == rcl_interfaces::msg::Log::INFO) {
+  } else if (entry.level == LogLevel::INFO) {
     text += "INFO";
-  } else if (entry.level == rcl_interfaces::msg::Log::WARN) {
+  } else if (entry.level == LogLevel::WARN) {
     text += "WARN";
-  } else if (entry.level == rcl_interfaces::msg::Log::ERROR) {
+  } else if (entry.level == LogLevel::ERROR) {
     text += "ERROR";
-  } else if (entry.level == rcl_interfaces::msg::Log::FATAL) {
+  } else if (entry.level == LogLevel::FATAL) {
     text += "FATAL";
   } else {
     text += std::to_string(entry.level);
@@ -229,14 +229,14 @@ void LogPanel::printEntry(size_t row, const LogEntry& entry, size_t line, size_t
     wattron(window_, A_REVERSE);
   }
 
-  if (entry.level == rcl_interfaces::msg::Log::DEBUG) {
+  if (entry.level == LogLevel::DEBUG) {
     wattron(window_, A_DIM);
-  } else if (entry.level == rcl_interfaces::msg::Log::ERROR) {
+  } else if (entry.level == LogLevel::ERROR) {
     wattron(window_, COLOR_PAIR(CP_RED));
-  } else if (entry.level == rcl_interfaces::msg::Log::FATAL) {
+  } else if (entry.level == LogLevel::FATAL) {
     wattron(window_, A_BOLD);
     wattron(window_, COLOR_PAIR(CP_RED));
-  } else if (entry.level == rcl_interfaces::msg::Log::WARN) {
+  } else if (entry.level == LogLevel::WARN) {
     wattron(window_, COLOR_PAIR(CP_YELLOW));
   }
 
@@ -287,15 +287,15 @@ void LogPanel::printEntry(size_t row, const LogEntry& entry, size_t line, size_t
     wattroff(window_, COLOR_PAIR(CP_DEFAULT_CYAN));
   }
 
-  if (entry.level == rcl_interfaces::msg::Log::DEBUG) {
+  if (entry.level == LogLevel::DEBUG) {
     wattroff(window_, A_DIM);
-  } else if (entry.level == rcl_interfaces::msg::Log::ERROR) {
+  } else if (entry.level == LogLevel::ERROR) {
     wattroff(window_, COLOR_PAIR(CP_RED));
   }
-  if (entry.level == rcl_interfaces::msg::Log::FATAL) {
+  if (entry.level == LogLevel::FATAL) {
     wattroff(window_, COLOR_PAIR(CP_RED));
     wattroff(window_, A_BOLD);
-  } else if (entry.level == rcl_interfaces::msg::Log::WARN) {
+  } else if (entry.level == LogLevel::WARN) {
     wattroff(window_, COLOR_PAIR(CP_YELLOW));
   }
 

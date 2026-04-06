@@ -332,23 +332,23 @@ bool LogFilter::accepted(const LogEntry& entry, bool new_entry) {
     node->second.count++;
   }
 
-  if (entry.level == rcl_interfaces::msg::Log::DEBUG) {
+  if (entry.level == LogLevel::DEBUG) {
     if (!debug_level_) {
       return false;
     }
-  } else if (entry.level == rcl_interfaces::msg::Log::INFO) {
+  } else if (entry.level == LogLevel::INFO) {
     if (!info_level_) {
       return false;
     }
-  } else if (entry.level == rcl_interfaces::msg::Log::WARN) {
+  } else if (entry.level == LogLevel::WARN) {
     if (!warn_level_) {
       return false;
     }
-  } else if (entry.level == rcl_interfaces::msg::Log::ERROR) {
+  } else if (entry.level == LogLevel::ERROR) {
     if (!error_level_) {
       return false;
     }
-  } else if (entry.level == rcl_interfaces::msg::Log::FATAL) {
+  } else if (entry.level == LogLevel::FATAL) {
     if (!fatal_level_) {
       return false;
     }

@@ -32,7 +32,6 @@
 
 #include <log_view/panel_interface.h>
 #include <log_view/log_store.h>
-#include <rclcpp/rclcpp.hpp>
 
 namespace log_view {
 
@@ -43,12 +42,10 @@ class StatusPanel : public PanelInterface {
   virtual ~StatusPanel() {}
   virtual void refresh();
 
-  virtual void setRosTime(const rclcpp::Time& time) { ros_time_ = time; }
-  virtual void setSystemTime(const rclcpp::Time& time) { system_time_ = time; }
+  virtual void setSystemTime(double time) { system_time_ = time; }
 
   protected:
-  rclcpp::Time ros_time_ = rclcpp::Time(0);
-  rclcpp::Time system_time_ = rclcpp::Time(0);
+  double system_time_ = 0.0;
   LogStorePtr logs_;
 };
 typedef std::shared_ptr<StatusPanel> StatusPanelPtr;
