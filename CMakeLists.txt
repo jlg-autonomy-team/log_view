@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(log_view)
 
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rcl_interfaces REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SYSTEMD REQUIRED libsystemd)
 
 set(CURSES_NEED_NCURSES TRUE)
 find_package(Curses REQUIRED)
@@ -16,9 +16,11 @@ find_library(CURSES_PANEL_LIBRARY NAMES panel)
 include_directories(
   include
   ${CURSES_INCLUDE_DIRS}
+  ${SYSTEMD_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
+  src/journal_reader.cpp
   src/log_filter.cpp
   src/log_store.cpp
   src/log_view.cpp
@@ -37,7 +39,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${CURSES_LIBRARIES}
   ${CURSES_PANEL_LIBRARY}
-  rclcpp::rclcpp
+  ${SYSTEMD_LIBRARIES}
 )
 
 add_executable(log_viewer src/main.cpp)
@@ -55,7 +57,6 @@ install(TARGETS ${PROJECT_NAME} log_viewer
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
-ament_export_dependencies(rclcpp rcl_interfaces)
 
 install(FILES
   CONTRIBUTING.md

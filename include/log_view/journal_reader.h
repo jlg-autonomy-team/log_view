@@ -26,54 +26,37 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <csignal>
+#pragma once
 
 #include <atomic>
-#include <chrono>
-#include <thread>
+#include <string>
+#include <vector>
 
-#include <log_view/journal_reader.h>
 #include <log_view/log_store.h>
-#include <log_view/log_view.h>
 
-using namespace std::chrono_literals;
+namespace log_view {
 
-static std::atomic<bool> g_exit{false};
+class JournalReader {
+public:
+  explicit JournalReader(LogStorePtr& logs);
+  ~JournalReader();
 
-void handleSigint(int sig)
-{
-  g_exit = true;
-}
+  // Discover running podman containers and start reading their journal entries.
+  // This method blocks and should be called from a dedicated thread.
+  void run();
 
-int main(int argc, char ** argv)
-{
-  // prevent ncurses from pausing for 1 second on ESC key
-  char escape_var[] = "ESCDELAY=0";
-  putenv(escape_var);
+  // Signal the reader to stop.
+  void stop();
 
-  signal(SIGINT, handleSigint);
+private:
+  // Query running podman containers and return their names.
+  std::vector<std::string> discoverContainers();
 
-  auto logs = std::make_shared<log_view::LogStore>();
-  log_view::LogView view(logs);
-  log_view::JournalReader reader(logs);
+  // Map journalctl priority (0-7) to LogLevel constants.
+  static uint8_t mapPriority(int priority);
 
-  view.init();
+  LogStorePtr logs_;
+  std::atomic<bool> running_{false};
+};
 
-  // Start journal reader in a background thread
-  std::thread journal_thread([&reader]() { reader.run(); });
-
-  while (!g_exit && !view.exited()) {
-    auto now = std::chrono::system_clock::now();
-    auto epoch = now.time_since_epoch();
-    double system_time = std::chrono::duration<double>(epoch).count();
-    view.setSystemTime(system_time);
-    view.update();
-    std::this_thread::sleep_for(30ms);
-  }
-
-  view.close();
-  reader.stop();
-  journal_thread.join();
-
-  return 0;
-}
+}  // namespace log_view
